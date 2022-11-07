@@ -1,0 +1,119 @@
+
+CREATE SEQUENCE public.metodo_pago_cod_pago_seq_1;
+
+CREATE TABLE public.metodo_pago (
+                cod_pago VARCHAR NOT NULL DEFAULT nextval('public.metodo_pago_cod_pago_seq_1'),
+                descripcion VARCHAR(30) NOT NULL,
+                CONSTRAINT metodo_pago_pk PRIMARY KEY (cod_pago)
+);
+
+
+ALTER SEQUENCE public.metodo_pago_cod_pago_seq_1 OWNED BY public.metodo_pago.cod_pago;
+
+CREATE SEQUENCE public.cliente_cod_cliente_seq;
+
+CREATE TABLE public.cliente (
+                cod_cliente INTEGER NOT NULL DEFAULT nextval('public.cliente_cod_cliente_seq'),
+                nombre VARCHAR(30) NOT NULL,
+                apellido VARCHAR(30) NOT NULL,
+                ci VARCHAR(8) NOT NULL,
+                direccion VARCHAR NOT NULL,
+                telefono VARCHAR NOT NULL,
+                CONSTRAINT cliente_pk PRIMARY KEY (cod_cliente)
+);
+
+
+ALTER SEQUENCE public.cliente_cod_cliente_seq OWNED BY public.cliente.cod_cliente;
+
+CREATE SEQUENCE public.alquiler_cod_alquiler_seq;
+
+CREATE TABLE public.alquiler (
+                cod_alquiler INTEGER NOT NULL DEFAULT nextval('public.alquiler_cod_alquiler_seq'),
+                cod_cliente INTEGER NOT NULL,
+                fecha_entrega DATE NOT NULL,
+                hora_entrega TIME NOT NULL,
+                lugar VARCHAR(100) NOT NULL,
+                fecha_devolucion DATE NOT NULL,
+                CONSTRAINT alquiler_pk PRIMARY KEY (cod_alquiler)
+);
+
+
+ALTER SEQUENCE public.alquiler_cod_alquiler_seq OWNED BY public.alquiler.cod_alquiler;
+
+CREATE SEQUENCE public.factura_cod_factura_seq_1;
+
+CREATE TABLE public.factura (
+                cod_factura VARCHAR NOT NULL DEFAULT nextval('public.factura_cod_factura_seq_1'),
+                cod_alquiler INTEGER NOT NULL,
+                cod_pago VARCHAR NOT NULL,
+                numero VARCHAR NOT NULL,
+                fecha DATE NOT NULL,
+                precio_total REAL NOT NULL,
+                CONSTRAINT factura_pk PRIMARY KEY (cod_factura)
+);
+
+
+ALTER SEQUENCE public.factura_cod_factura_seq_1 OWNED BY public.factura.cod_factura;
+
+CREATE SEQUENCE public.producto_cod_producto_seq;
+
+CREATE TABLE public.producto (
+                cod_producto INTEGER NOT NULL DEFAULT nextval('public.producto_cod_producto_seq'),
+                descripcion VARCHAR NOT NULL,
+                tipo VARCHAR NOT NULL,
+                color VARCHAR(20) NOT NULL,
+                precio REAL NOT NULL,
+                CONSTRAINT producto_pk PRIMARY KEY (cod_producto)
+);
+
+
+ALTER SEQUENCE public.producto_cod_producto_seq OWNED BY public.producto.cod_producto;
+
+CREATE SEQUENCE public.detalle_factura_cod_detalle_seq;
+
+CREATE TABLE public.detalle_factura (
+                cod_detalle INTEGER NOT NULL DEFAULT nextval('public.detalle_factura_cod_detalle_seq'),
+                cod_factura VARCHAR NOT NULL,
+                cod_producto INTEGER NOT NULL,
+                subtotal REAL NOT NULL,
+                cantidad INTEGER NOT NULL,
+                CONSTRAINT detalle_factura_pk PRIMARY KEY (cod_detalle)
+);
+
+
+ALTER SEQUENCE public.detalle_factura_cod_detalle_seq OWNED BY public.detalle_factura.cod_detalle;
+
+ALTER TABLE public.factura ADD CONSTRAINT metodo_pago_factura_fk
+FOREIGN KEY (cod_pago)
+REFERENCES public.metodo_pago (cod_pago)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.alquiler ADD CONSTRAINT cliente_alquiler_fk
+FOREIGN KEY (cod_cliente)
+REFERENCES public.cliente (cod_cliente)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.factura ADD CONSTRAINT alquiler_factura_fk
+FOREIGN KEY (cod_alquiler)
+REFERENCES public.alquiler (cod_alquiler)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.detalle_factura ADD CONSTRAINT factura_detalle_factura_fk
+FOREIGN KEY (cod_factura)
+REFERENCES public.factura (cod_factura)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.detalle_factura ADD CONSTRAINT producto_detalle_factura_fk
+FOREIGN KEY (cod_producto)
+REFERENCES public.producto (cod_producto)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
